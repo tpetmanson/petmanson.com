@@ -12,3 +12,15 @@ function CreateLightGalleryElements(container_id, path, from, to) {
     container.appendChild(a);
   }
 }
+
+// Fix vh on mobiles with custom CSS variable.
+function UpdateVhProperty() {
+  document.querySelector(':root').style
+    .setProperty('--vh', window.innerHeight/100 + 'px');
+}
+
+// Update VH in various occasions.
+window.addEventListener('resize', UpdateVhProperty);
+window.addEventListener('load', UpdateVhProperty);
+window.addEventListener('focus', UpdateVhProperty);
+UpdateVhProperty();

@@ -14,12 +14,12 @@ html, body {
   position:fixed;
   top:0;
   left:0;
-  background-image: url(img/top-banner.png);
+  background-image: url(img/top-banner-min.png);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   width: 100vw;
-  height: 100vh;
+  height: calc(100 * var(--vh));
   z-index:-1;
 }
 
@@ -27,7 +27,7 @@ html, body {
   position:relative;
   top:0;
   left:0;
-  height:100vh;
+  height:calc(100 * var(--vh));
   color: white;
   /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#000000+80,000000+92&0+8,0+28,0+82,0.65+100 */
   background: -moz-linear-gradient(top, rgba(0,0,0,0) 8%, rgba(0,0,0,0) 28%, rgba(0,0,0,0) 80%, rgba(0,0,0,0) 82%, rgba(0,0,0,0.36) 92%, rgba(0,0,0,0.65) 100%); /* FF3.6-15 */
@@ -90,7 +90,7 @@ html, body {
 }
 @media screen and (max-width: 600px) {
   .albums-list {
-    width:95vw;
+    width:99vw;
   }
 }
 .album {
@@ -139,6 +139,13 @@ html, body {
 
 .smaller-title-font {
   font-size: 22px;
+}
+
+/* use smaller album title font on mobile */
+@media screen and (max-width: 600px) {
+  .album-title {
+    font-size: 22px;
+  }
 }
 
 .album-download {
