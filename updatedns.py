@@ -6,6 +6,7 @@ logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
+# Fill in your API key below.
 zone_api_key = ""
 basic = HTTPBasicAuth('tpetmanson', zone_api_key)
 
