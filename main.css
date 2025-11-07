@@ -247,6 +247,13 @@ html, body {
   line-height: 1.5;
 }
 
+div.code
+{
+  font-family: Verdana, sans-serif;
+  white-space: pre;
+}
+
+
 /* F O O T E R */
 .footer {
   width:100vw;
