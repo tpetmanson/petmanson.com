@@ -3,4 +3,4 @@ Disallow: /img/news/2023-08-26-getting-married/
 Allow: /
 
 Sitemap: https://petmanson.com/sitemap.xml
-file:///home/timo/projects/petmanson_com/img/news/2023-08-26-getting-married/1.jpg
+file:///home/timo/projects/petmanson_com/img/news/2023-08-26-getting-married/
