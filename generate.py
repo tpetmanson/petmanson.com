@@ -2,8 +2,8 @@
 """Generate dedicated post pages and sitemap.xml from index.html.
 
 index.html stays the single source of truth: this script parses it, extracts
-the shared <head>, <header>, album sections and <footer>, plus every news
-<article>, and writes one standalone page per article into posts/. It also
+the shared <head> and <footer>, plus every news <article>, and writes one
+standalone page per article into posts/. It also
 rewrites sitemap.xml and deletes orphaned pages for posts that no longer
 exist.
 
@@ -212,9 +212,8 @@ def nav_html(newer, older):
             f'<a class="post-nav-home" href="./">Main page</a>{next_link}</nav>')
 
 
-def render_post(post, newer, older, head_template, header, albums, footer):
+def render_post(post, newer, older, head_template, footer):
     nav = nav_html(newer, older)
-    albums_html = "\n\n".join(albums)
     return f"""<!doctype html>
 <html lang="en">
 
@@ -224,10 +223,7 @@ def render_post(post, newer, older, head_template, header, albums, footer):
 </head>
 
 <body class="post-page">
-{header}
 <main class="content-wrapper">
-{albums_html}
-
 <div class="news">
   <h1 class="section-title">{esc(post.title)}</h1>
   <div class="post-date">{post.date}</div>
@@ -261,8 +257,6 @@ def write_sitemap(posts):
 def main():
     soup = BeautifulSoup((ROOT / "index.html").read_text(), "html.parser")
 
-    header = str(soup.find("header"))
-    albums = [str(div) for div in soup.select("main > div.albums")]
     footer = str(soup.find("footer"))
     posts = extract_posts(soup)
     head_template = build_head_template(soup)  # mutates soup.head, do this last
@@ -271,7 +265,7 @@ def main():
     for idx, post in enumerate(posts):
         newer = posts[idx - 1] if idx > 0 else None
         older = posts[idx + 1] if idx + 1 < len(posts) else None
-        page = render_post(post, newer, older, head_template, header, albums, footer)
+        page = render_post(post, newer, older, head_template, footer)
         (POSTS_DIR / f"{post.slug}.html").write_text(page)
     print(f"Wrote {len(posts)} posts to {POSTS_DIR.relative_to(ROOT)}/")
 
