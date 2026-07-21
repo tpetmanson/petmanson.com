@@ -1,0 +1,8 @@
+[project]
+name = "petmanson-com"
+version = "1.0.0"
+description = "Static site generator for petmanson.com — builds posts/ and sitemap.xml from index.html"
+requires-python = ">=3.10"
+dependencies = [
+    "beautifulsoup4>=4.12",
+]

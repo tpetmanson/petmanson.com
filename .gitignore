@@ -4,3 +4,7 @@ videos
 albums
 .idea
 
+# Python / uv
+.venv
+__pycache__
+
