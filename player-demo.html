@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Web player demo</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="robots" content="noindex">
+
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" type="text/css" href="reset.css">
+  <link rel="stylesheet" type="text/css" href="main.css">
+  <script type="text/javascript" src="main.js"></script>
+  <style>
+    .demo-column {
+      width: 450px;
+      max-width: 90vw;
+      margin: 0 auto;
+      padding-top: 40px;
+    }
+    .demo-column h2 {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 24px;
+      letter-spacing: -1.4px;
+      margin-top: 50px;
+    }
+    .demo-column p {
+      padding-top: 7px;
+      padding-bottom: 7px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="content-wrapper">
+    <div class="demo-column">
+      <h1 class="section-title">Web player demo</h1>
+      <p>Demo of <i>CreateWebPlayer</i> from main.js — a self-hosted replacement
+        for YouTube / SoundCloud / Bandcamp iframes. Native browser controls
+        handle play, seek and volume; links back to the original sources go in
+        the post HTML next to the player, like below.</p>
+
+      <h2>Album playlist (audio, auto-advances)</h2>
+      <div id="neptune-player"></div>
+      <p>Listen on
+        <a href="https://soundcloud.com/petmanson/sets/voyage-to-neptune-2020" target="_blank">soundcloud</a></p>
+      <script type="text/javascript">
+        let neptune = 'albums/released/VoyageToNeptune'
+        CreateWebPlayer('neptune-player', {
+          artist: 'Timo Petmanson',
+          album: 'Voyage To Neptune',
+          buy: 'https://timopetmanson.bandcamp.com/album/voyage-to-neptune',
+          items: [
+            { title: 'Star diplomat',
+              src: neptune + '/Timo%20Petmanson%20-%20Voyage%20To%20Neptune%20-%2001%20Star%20diplomat.mp3',
+              cover: neptune + '/cover.jpg', duration: '1:54' },
+            { title: 'Rain after the heatwave',
+              src: neptune + '/Timo%20Petmanson%20-%20Voyage%20To%20Neptune%20-%2002%20Rain%20after%20the%20heatwave%20.mp3',
+              cover: neptune + '/cover.jpg', duration: '5:10' },
+            { title: 'Midnight',
+              src: neptune + '/Timo%20Petmanson%20-%20Voyage%20To%20Neptune%20-%2003%20Midnight.mp3',
+              cover: neptune + '/cover.jpg', duration: '4:21' },
+            { title: 'Daydreaming',
+              src: neptune + '/Timo%20Petmanson%20-%20Voyage%20To%20Neptune%20-%2004%20Daydreaming.mp3',
+              cover: neptune + '/cover.jpg', duration: '5:27' },
+            { title: 'Foolishly funky',
+              src: neptune + '/Timo%20Petmanson%20-%20Voyage%20To%20Neptune%20-%2005%20Foolishly%20funky.mp3',
+              cover: neptune + '/cover.jpg', duration: '3:05' },
+            { title: 'Summer solstice',
+              src: neptune + '/Timo%20Petmanson%20-%20Voyage%20To%20Neptune%20-%2006%20Summer%20solstice.mp3',
+              cover: neptune + '/cover.jpg', duration: '3:30' },
+            { title: 'Saturday jam',
+              src: neptune + '/Timo%20Petmanson%20-%20Voyage%20To%20Neptune%20-%2007%20Saturday%20jam.mp3',
+              cover: neptune + '/cover.jpg', duration: '5:29' },
+            { title: 'Autumn air',
+              src: neptune + '/Timo%20Petmanson%20-%20Voyage%20To%20Neptune%20-%2008%20Autumn%20air.mp3',
+              cover: neptune + '/cover.jpg', duration: '4:01' },
+            { title: 'Officer raggaman',
+              src: neptune + '/Timo%20Petmanson%20-%20Voyage%20To%20Neptune%20-%2009%20Officer%20raggaman.mp3',
+              cover: neptune + '/cover.jpg', duration: '4:59' },
+            { title: 'Voyage to Neptune',
+              src: neptune + '/Timo%20Petmanson%20-%20Voyage%20To%20Neptune%20-%2010%20Voyage%20to%20Neptune.mp3',
+              cover: neptune + '/cover.jpg', duration: '6:35' },
+          ]
+        });
+      </script>
+
+      <h2>Single track (audio)</h2>
+      <div id="helisupp-player"></div>
+      <p>Listen on
+        <a href="https://soundcloud.com/petmanson/helisupp" target="_blank">soundcloud</a></p>
+      <script type="text/javascript">
+        CreateWebPlayer('helisupp-player', {
+          artist: 'Timo Petmanson',
+          album: 'Helisupp',
+          buy: 'https://timopetmanson.bandcamp.com/album/helisupp',
+          items: [
+            { title: 'Helisupp',
+              src: 'albums/released/Helisupp/Timo%20Petmanson%20-%20Helisupp.mp3',
+              cover: 'albums/released/Helisupp/cover.jpg', duration: '49:30' },
+          ]
+        });
+      </script>
+
+      <h2>Video playlist</h2>
+      <div id="video-player"></div>
+      <p>Watch on
+        <a href="https://www.youtube.com/channel/UCinI1HCDYcGgiIWgUUDZZgQ" target="_blank">YouTube</a></p>
+      <script type="text/javascript">
+        CreateWebPlayer('video-player', {
+          artist: 'Timo Petmanson',
+          album: 'Voyage To Neptune videos',
+          buy: 'https://timopetmanson.bandcamp.com/album/voyage-to-neptune',
+          items: [
+            { title: 'Star diplomat (video)',
+              src: 'videos/petmanson-star-diplomat.mp4',
+              cover: 'albums/released/VoyageToNeptune/cover.jpg', duration: '1:47' },
+            { title: 'Summer solstice (video)',
+              src: 'videos/petmanson-summer-solstice.mp4',
+              cover: 'albums/released/VoyageToNeptune/cover.jpg', duration: '4:30' },
+            { title: 'Voyage to Neptune (video)',
+              src: 'videos/petmanson-voyage-to-neptune.mp4',
+              cover: 'albums/released/VoyageToNeptune/cover.jpg', duration: '9:26' },
+          ]
+        });
+      </script>
+    </div>
+  </main>
+  <footer class="footer">
+    <div>Demo page — not linked from the site.</div>
+  </footer>
+</body>
+
+</html>

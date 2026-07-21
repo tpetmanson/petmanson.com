@@ -19,22 +19,22 @@ function CreateLightGalleryElements(container_id, path, from, to) {
 // W E B  P L A Y E R
 // Self-hosted replacement for third-party iframe players (YouTube,
 // SoundCloud, Bandcamp). Plays audio/video with the browser's native
-// controls and shows plain links back to the original sources.
+// controls; put links back to the original sources (Bandcamp, YouTube,
+// SoundCloud, ...) in the post HTML next to the player.
 //
 // Usage:
 //   <div id="my-player"></div>
 //   <script type="text/javascript">
 //     CreateWebPlayer('my-player', {
-//       artist: 'Timo Petmanson',        // optional, for lock-screen metadata
-//       album: 'Voyage To Neptune',      // optional, same
+//       artist: 'Timo Petmanson',        // optional; shown as "by ..." + lock-screen metadata
+//       album: 'Voyage To Neptune',      // optional; shown as the header title
+//       buy: 'https://timopetmanson.bandcamp.com/album/voyage-to-neptune',
+//                                        // optional; adds a "buy" link to the header
 //       items: [
 //         { title: 'Star diplomat',
 //           src: 'albums/released/VoyageToNeptune/...%2001%20Star%20diplomat.mp3',
 //           cover: 'albums/released/VoyageToNeptune/cover.jpg',
-//           duration: '3:59',            // optional display string
-//           links: [
-//             { label: 'Buy on Bandcamp', url: 'https://timopetmanson.bandcamp.com/...' },
-//           ] },
+//           duration: '3:59' },          // duration is an optional display string
 //         // ... more items; clicking a row in the list plays it, and when
 //         // a track ends the next one starts automatically.
 //       ]
@@ -64,12 +64,25 @@ function CreateWebPlayer(container_id, config) {
   audio.controls = true
   audio.preload = config.preload || 'metadata'
 
-  let nowplaying = document.createElement('div')
-  nowplaying.className = 'webplayer-nowplaying'
-
-  // Plain text links back to the original sources.
-  let links = document.createElement('div')
-  links.className = 'webplayer-links'
+  // Bandcamp-style header: title with a "buy" link, then "by <artist>".
+  let header = document.createElement('div')
+  header.className = 'webplayer-header'
+  let headertitle = document.createElement('span')
+  headertitle.className = 'webplayer-header-title'
+  headertitle.textContent = config.album || (items[0] ? items[0].title : '')
+  header.appendChild(headertitle)
+  if (config.buy) {
+    let buy = document.createElement('a')
+    buy.className = 'webplayer-buy'
+    buy.setAttribute('href', config.buy)
+    buy.setAttribute('target', '_blank')
+    buy.setAttribute('rel', 'noopener')
+    buy.textContent = 'buy'
+    header.appendChild(buy)
+  }
+  let byline = document.createElement('div')
+  byline.className = 'webplayer-byline'
+  if (config.artist) byline.textContent = 'by ' + config.artist
 
   // Track listing: a simple list; click a row to play it.
   let playlist = document.createElement('ol')
@@ -99,9 +112,9 @@ function CreateWebPlayer(container_id, config) {
 
   container.appendChild(cover)
   container.appendChild(video)
+  if (headertitle.textContent) container.appendChild(header)
+  if (config.artist) container.appendChild(byline)
   container.appendChild(audio)
-  container.appendChild(nowplaying)
-  container.appendChild(links)
   if (items.length > 1) container.appendChild(playlist)
 
   function IsVideo(item) {
@@ -132,20 +145,6 @@ function CreateWebPlayer(container_id, config) {
       if (item.cover) cover.src = item.cover
       audio.src = item.src
     }
-
-    nowplaying.textContent =
-      (items.length > 1 ? (idx + 1) + '. ' : '') + item.title
-
-    links.textContent = ''
-    ;(item.links || []).forEach(function(link, i) {
-      if (i > 0) links.appendChild(document.createTextNode(' · '))
-      let a = document.createElement('a')
-      a.setAttribute('href', link.url)
-      a.setAttribute('target', '_blank')
-      a.setAttribute('rel', 'noopener')
-      a.textContent = link.label
-      links.appendChild(a)
-    })
 
     rows.forEach(function(row, i) {
       row.classList.toggle('webplayer-item-active', i == idx)

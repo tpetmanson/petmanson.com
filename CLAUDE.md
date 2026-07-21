@@ -31,21 +31,22 @@ Personal website of Timo Petmanson (petmanson.com) — an electronic-music artis
 
 ## Adding a web player to a post
 
-`CreateWebPlayer` (in main.js, styles in main.css) is the self-hosted replacement for YouTube / SoundCloud / Bandcamp iframes. It plays media files hosted on the site (`albums/`, `recordings/`, `videos/`) with native `<audio>`/`<video>` controls and deliberately minimal chrome: cover art, the native control bar, the current title, plain text links back to the original sources (third-party services don't expose direct streams, so those remain links, not embedded playback), and — for multiple items — a simple clickable track list with auto-advance to the next item. No custom buttons; sharp edges, no rounded corners. `player-demo.html` (noindex, not linked from the site) is a working demo. In an article:
+`CreateWebPlayer` (in main.js, styles in main.css) is the self-hosted replacement for YouTube / SoundCloud / Bandcamp iframes. It plays media files hosted on the site (`albums/`, `recordings/`, `videos/`) with native `<audio>`/`<video>` controls and deliberately minimal chrome: cover art, a Bandcamp-style header (title in Bandcamp blue with a right-aligned "buy" link, "by <artist>" under it), the native control bar, and — for multiple items — a simple clickable track list (light gray, current track bold) with auto-advance to the next item. No custom buttons; sharp edges, no rounded corners. Other links back to the original sources (third-party services don't expose direct streams, so those remain links, not embedded playback) go in the post HTML next to the player. `player-demo.html` (noindex, not linked from the site) is a working demo. In an article:
 
 ```html
 <div id="<name>-player"></div>
+<p>Listen on <a href="https://soundcloud.com/petmanson/..." target="_blank">soundcloud</a></p>
 <script type="text/javascript">
   CreateWebPlayer('<name>-player', {
-    artist: 'Timo Petmanson',   // optional; lock-screen metadata
-    album: 'Album name',        // optional
+    artist: 'Timo Petmanson',   // optional; "by ..." line + lock-screen metadata
+    album: 'Album name',        // optional; header title (falls back to first item title)
+    buy: 'https://....bandcamp.com/album/...',  // optional; "buy" link in the header
     items: [
       { title: 'Track title',
         src: 'albums/released/.../Track.mp3',   // percent-encode spaces
         cover: 'albums/released/.../cover.jpg', // optional; poster for video
-        duration: '3:59',                       // optional display string
-        links: [ { label: 'Buy on Bandcamp', url: 'https://...' } ] },
-      // more items → playlist with prev/next and auto-advance
+        duration: '3:59' },                     // optional display string
+      // more items → playlist with auto-advance
     ]
   });
 </script>
