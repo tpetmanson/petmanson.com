@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Personal website of Timo Petmanson (petmanson.com) — an electronic-music artist page with albums, collaborations, and a news blog. It is a hand-written static site with **no build system and no tests**; the only generated artifacts are the dedicated post pages in `posts/` and `sitemap.xml`, produced by `uv run generate.py`. Deployment is just serving these files; preview locally with any static server, e.g. `python3 -m http.server`.
+Personal website of Timo Petmanson (petmanson.com) — an electronic-music artist page with albums, collaborations, and a news blog. It is a hand-written static site with **no build system and no tests**; the only generated artifacts are the dedicated post pages in `posts/` and `sitemap.xml`, produced by `uv run generate.py`. Deployment is just serving these files; preview locally with `python3 serve.py` (like `python3 -m http.server`, but with the HTTP Range support that audio/video seeking needs).
 
 ## Structure
 
 - `index.html` — the single source of truth for the whole site. One page containing the album sections and every news post as an `<article class="article">` inside `<div class="news">`. **New blog posts are added here**, as a new `<article>` placed at the top of the news list (posts are ordered newest-first, each with an `<h2 class="title">` and a `<div class="date">YYYY-MM-DD</div>`). **After adding or editing a post, run `uv run generate.py`** to regenerate the dedicated post pages and sitemap.
 - `generate.py` — parses index.html and writes one standalone page per post into `posts/` (slug: `<date>-<slugified-title>.html`), plus `sitemap.xml`. Post pages reuse the index head and footer (no banner header or album lists), use `<base href="../">` so all relative URLs keep working, carry per-post SEO/OpenGraph/JSON-LD metadata, and have previous / main page / next navigation ("next" = older). Orphaned pages of removed posts are deleted. Dependencies (BeautifulSoup) are declared in `pyproject.toml` and managed by uv (`uv.lock` is committed; `.venv/` is gitignored); commit the regenerated `posts/` and `sitemap.xml` together with index.html changes.
-- `main.js` — `CreateLightGalleryElements(container_id, path, from, to)` gallery builder, a `--vh` CSS-variable fix for mobile viewport height, "infinite scroll" that reveals one more article (`visiblearticle` class) each time the user scrolls to the bottom, and `Slugify`/`LinkArticleTitles` which turn article titles on the index into links to their post pages. `Slugify` must stay identical to `slugify()` in generate.py.
+- `main.js` — `CreateLightGalleryElements(container_id, path, from, to)` gallery builder, `CreateWebPlayer(container_id, config)` self-hosted audio/video player (see below), a `--vh` CSS-variable fix for mobile viewport height, "infinite scroll" that reveals one more article (`visiblearticle` class) each time the user scrolls to the bottom, and `Slugify`/`LinkArticleTitles` which turn article titles on the index into links to their post pages. `Slugify` must stay identical to `slugify()` in generate.py.
 - `main.css` / `reset.css` — all styling; no preprocessor.
 - `plugins/LightGallery/` — vendored LightGallery library for photo galleries.
 - `img/news/<post-name>/` — photos for a post, named `1.jpg`, `2.jpg`, … with matching `1_thumb.jpg` thumbnails.
@@ -28,6 +28,30 @@ Personal website of Timo Petmanson (petmanson.com) — an electronic-music artis
      lightGallery(document.getElementById('<name>-gallery'));
    </script>
    ```
+
+## Adding a web player to a post
+
+`CreateWebPlayer` (in main.js, styles in main.css) is the self-hosted replacement for YouTube / SoundCloud / Bandcamp iframes. It plays media files hosted on the site (`albums/`, `recordings/`, `videos/`) with native `<audio>`/`<video>` controls and deliberately minimal chrome: cover art, the native control bar, the current title, plain text links back to the original sources (third-party services don't expose direct streams, so those remain links, not embedded playback), and — for multiple items — a simple clickable track list with auto-advance to the next item. No custom buttons; sharp edges, no rounded corners. `player-demo.html` (noindex, not linked from the site) is a working demo. In an article:
+
+```html
+<div id="<name>-player"></div>
+<script type="text/javascript">
+  CreateWebPlayer('<name>-player', {
+    artist: 'Timo Petmanson',   // optional; lock-screen metadata
+    album: 'Album name',        // optional
+    items: [
+      { title: 'Track title',
+        src: 'albums/released/.../Track.mp3',   // percent-encode spaces
+        cover: 'albums/released/.../cover.jpg', // optional; poster for video
+        duration: '3:59',                       // optional display string
+        links: [ { label: 'Buy on Bandcamp', url: 'https://...' } ] },
+      // more items → playlist with prev/next and auto-advance
+    ]
+  });
+</script>
+```
+
+Video vs audio is inferred from the src extension (override with `video: true/false`). Only one player on the page plays at a time.
 
 ## Conventions
 

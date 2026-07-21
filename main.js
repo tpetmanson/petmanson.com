@@ -16,6 +16,180 @@ function CreateLightGalleryElements(container_id, path, from, to) {
   }
 }
 
+// W E B  P L A Y E R
+// Self-hosted replacement for third-party iframe players (YouTube,
+// SoundCloud, Bandcamp). Plays audio/video with the browser's native
+// controls and shows plain links back to the original sources.
+//
+// Usage:
+//   <div id="my-player"></div>
+//   <script type="text/javascript">
+//     CreateWebPlayer('my-player', {
+//       artist: 'Timo Petmanson',        // optional, for lock-screen metadata
+//       album: 'Voyage To Neptune',      // optional, same
+//       items: [
+//         { title: 'Star diplomat',
+//           src: 'albums/released/VoyageToNeptune/...%2001%20Star%20diplomat.mp3',
+//           cover: 'albums/released/VoyageToNeptune/cover.jpg',
+//           duration: '3:59',            // optional display string
+//           links: [
+//             { label: 'Buy on Bandcamp', url: 'https://timopetmanson.bandcamp.com/...' },
+//           ] },
+//         // ... more items; clicking a row in the list plays it, and when
+//         // a track ends the next one starts automatically.
+//       ]
+//     });
+//   </script>
+// Whether an item is video is inferred from the src file extension;
+// override with an explicit `video: true/false` on the item.
+
+function CreateWebPlayer(container_id, config) {
+  let container = document.getElementById(container_id)
+  let items = config.items || []
+  let current = -1
+
+  container.classList.add('webplayer')
+
+  // The media elements; native controls handle play, seek and volume.
+  let cover = document.createElement('img')
+  cover.className = 'webplayer-cover'
+  cover.setAttribute('alt', 'Cover art')
+  let video = document.createElement('video')
+  video.className = 'webplayer-video'
+  video.controls = true
+  video.playsInline = true
+  video.preload = config.preload || 'metadata'
+  let audio = document.createElement('audio')
+  audio.className = 'webplayer-audio'
+  audio.controls = true
+  audio.preload = config.preload || 'metadata'
+
+  let nowplaying = document.createElement('div')
+  nowplaying.className = 'webplayer-nowplaying'
+
+  // Plain text links back to the original sources.
+  let links = document.createElement('div')
+  links.className = 'webplayer-links'
+
+  // Track listing: a simple list; click a row to play it.
+  let playlist = document.createElement('ol')
+  playlist.className = 'webplayer-playlist'
+  let rows = []
+  items.forEach(function(item, idx) {
+    let li = document.createElement('li')
+    let row = document.createElement('button')
+    row.className = 'webplayer-item'
+    row.addEventListener('click', function() { Load(idx, true) })
+    let num = document.createElement('span')
+    num.className = 'webplayer-item-num'
+    num.textContent = idx + 1
+    let name = document.createElement('span')
+    name.className = 'webplayer-item-title'
+    name.textContent = item.title
+    let duration = document.createElement('span')
+    duration.className = 'webplayer-item-duration'
+    duration.textContent = item.duration || ''
+    row.appendChild(num)
+    row.appendChild(name)
+    row.appendChild(duration)
+    li.appendChild(row)
+    playlist.appendChild(li)
+    rows.push(row)
+  })
+
+  container.appendChild(cover)
+  container.appendChild(video)
+  container.appendChild(audio)
+  container.appendChild(nowplaying)
+  container.appendChild(links)
+  if (items.length > 1) container.appendChild(playlist)
+
+  function IsVideo(item) {
+    if (item.video !== undefined) return item.video
+    return /\.(mp4|m4v|webm|mov|ogv)(\?|$)/i.test(item.src)
+  }
+
+  function Load(idx, autoplay) {
+    if (idx < 0 || idx >= items.length) return
+    audio.pause()
+    video.pause()
+    current = idx
+    let item = items[idx]
+    let isvideo = IsVideo(item)
+    let media = isvideo ? video : audio
+
+    video.classList.toggle('webplayer-hidden', !isvideo)
+    audio.classList.toggle('webplayer-hidden', isvideo)
+    cover.classList.toggle('webplayer-hidden', isvideo || !item.cover)
+    if (isvideo) {
+      audio.removeAttribute('src')
+      if (item.cover) video.setAttribute('poster', item.cover)
+      else video.removeAttribute('poster')
+      video.src = item.src
+    } else {
+      video.removeAttribute('src')
+      video.removeAttribute('poster')
+      if (item.cover) cover.src = item.cover
+      audio.src = item.src
+    }
+
+    nowplaying.textContent =
+      (items.length > 1 ? (idx + 1) + '. ' : '') + item.title
+
+    links.textContent = ''
+    ;(item.links || []).forEach(function(link, i) {
+      if (i > 0) links.appendChild(document.createTextNode(' · '))
+      let a = document.createElement('a')
+      a.setAttribute('href', link.url)
+      a.setAttribute('target', '_blank')
+      a.setAttribute('rel', 'noopener')
+      a.textContent = link.label
+      links.appendChild(a)
+    })
+
+    rows.forEach(function(row, i) {
+      row.classList.toggle('webplayer-item-active', i == idx)
+    })
+
+    if (autoplay) {
+      let promise = media.play()
+      if (promise) promise.catch(function() {})
+    }
+  }
+
+  function OnEnded() {
+    // Automatically continue with the next item.
+    if (current < items.length - 1) Load(current + 1, true)
+  }
+  audio.addEventListener('ended', OnEnded)
+  video.addEventListener('ended', OnEnded)
+
+  function OnPlay(ev) {
+    // Only one player on the page should play at a time.
+    for (let media of document.querySelectorAll('audio, video')) {
+      if (media !== ev.target) media.pause()
+    }
+    // Lock-screen / hardware-key metadata and controls (Media Session API).
+    if ('mediaSession' in navigator) {
+      let item = items[current]
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: item.title,
+        artist: config.artist || '',
+        album: config.album || '',
+        artwork: item.cover ? [{ src: item.cover }] : [],
+      })
+      navigator.mediaSession.setActionHandler('previoustrack',
+        current > 0 ? function() { Load(current - 1, true) } : null)
+      navigator.mediaSession.setActionHandler('nexttrack',
+        current < items.length - 1 ? function() { Load(current + 1, true) } : null)
+    }
+  }
+  audio.addEventListener('play', OnPlay)
+  video.addEventListener('play', OnPlay)
+
+  Load(0, false)
+}
+
 // Fix vh on mobiles with custom CSS variable.
 function UpdateVhProperty() {
   document.querySelector(':root').style
