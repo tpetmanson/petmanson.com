@@ -75,6 +75,28 @@ html, body {
   text-transform: none;
 } 
 
+.relative-banner .credits {
+  position: absolute;
+  bottom: 7px;
+  right: 15px;
+  color: white;
+
+  text-align: center;
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  word-spacing: 2px;
+  font-weight: 400;
+  text-decoration: none;
+  font-style: italic;
+  font-variant: normal;
+  text-transform: none;
+}
+
+.relative-banner .credits a {
+  color: white;
+}
+
 /* A L B U M */
 .albums {}
 .albums-list {
