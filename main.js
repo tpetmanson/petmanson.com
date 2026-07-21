@@ -6,7 +6,6 @@ function CreateLightGalleryElements(container_id, path, from, to) {
   let container = document.getElementById(container_id)
   console.log(container);
   for (let idx=from ; idx<=to ; ++idx) {
-    console.log(idx)
     let a = document.createElement('a')
     a.setAttribute('href', `${path}/${idx}.jpg`)
     let img = document.createElement('img')
