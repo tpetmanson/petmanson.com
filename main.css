@@ -378,8 +378,8 @@ audio.webplayer-audio::-webkit-media-controls-enclosure {
   font-size: 13px;
 }
 .webplayer-playlist {
-  margin-top: 10px;
-  padding: 8px 10px;
+  margin-top: 0px;
+  padding: 0px 10px;
   background-color: #f5f5f5;
 }
 .webplayer-playlist li {

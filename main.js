@@ -110,10 +110,10 @@ function CreateWebPlayer(container_id, config) {
     rows.push(row)
   })
 
-  container.appendChild(cover)
-  container.appendChild(video)
   if (headertitle.textContent) container.appendChild(header)
   if (config.artist) container.appendChild(byline)
+  container.appendChild(cover)
+  container.appendChild(video)
   container.appendChild(audio)
   if (items.length > 1) container.appendChild(playlist)
 
